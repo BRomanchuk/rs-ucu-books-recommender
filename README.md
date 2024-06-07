@@ -2,8 +2,16 @@
 UCU Recommender Systems course project
 
 
-## Structure
-
+## Project Structure
+```bash
+├── artifacts        # artifacts folder
+├── data             # folder with books, users, and ratings data
+├── experiments      # folder with experiments
+└── src
+    ├── entities     # wrapper classes for users, items, and ratings
+    ├── recommenders # wrapper classes for recommendation algorithms
+    └── evaluators   # evaluation realizations
+```
 
 
 ## Installation
