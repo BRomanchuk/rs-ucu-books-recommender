@@ -1,19 +1,20 @@
+from src.recommenders.base import BaseRecommender
 from src.entities.ratings import Ratings
 from src.evaluation import abs_loss
 
 import pandas as pd
 
 
-class BaselineRecommender:
+class BaselineRecommender(BaseRecommender):
     def __init__(self):
-        pass
+        super().__init__()
 
     def fit(self, items, users, ratings: Ratings):
         self.ratings = ratings
     
-    def predict(self, users, items):
-        users = self.ratings['User-ID'].unique()
-        items = self.ratings['ISBN'].unique()
+    def predict(self, users_df, items_df):
+        users = users_df['User-ID'].unique()
+        items = items_df['ISBN'].unique()
         predictions = []
         for item in items:
             item_rating = self.ratings.item_avg(item)
