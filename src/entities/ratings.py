@@ -16,12 +16,12 @@ class Ratings:
     
     def item_avg(self, item):
         item_ratings = self.get_item_ratings(item)
-        avg_rating = item_ratings[self.rating_col].mean()
+        avg_rating = item_ratings.loc[:, self.rating_col].mean()
         return avg_rating
     
     def user_avg(self, user):
         user_ratings = self.get_user_ratings(user)
-        avg_rating = user_ratings[self.rating_col].mean()
+        avg_rating = user_ratings.loc[:, self.rating_col].mean()
         return avg_rating
 
     def get_rating(self, item, user):
@@ -35,9 +35,9 @@ class Ratings:
         return rating
 
     def get_item_mask(self, item):
-        mask = (self.ratings_df[self.item_col] == item)
+        mask = (self.ratings_df.loc[:, self.item_col] == item)
         return mask
     
     def get_user_mask(self, user):
-        mask = (self.ratings_df[self.user_col] == user)
+        mask = (self.ratings_df.loc[:, self.user_col] == user)
         return mask
