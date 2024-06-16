@@ -20,7 +20,7 @@ $$L = \sqrt{\frac{1}{|U||I|} \sum_{i \in I} \sum_{u \in U} \left( r_{u, i} - p_{
 
 2. Precision at K
 
-$$P@k = \frac{\text{\# of relevant items in the top k positions}}{k}$$
+$$P@k = \frac{\text{number of relevant items in the top k positions}}{k}$$
 
 3. Average Precision
 
