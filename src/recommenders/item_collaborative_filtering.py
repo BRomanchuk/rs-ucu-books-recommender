@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from scipy.sparse import csr_matrix
 from sklearn.metrics.pairwise import cosine_similarity
+from tqdm import tqdm
 
 def list_minus(a, b):
     return [x for x in a if x not in b]
@@ -35,7 +36,7 @@ class ItemRecommender(BaseRecommender):
         
     def predict(self, users, items):
         user_predictions = {}
-        for user_id in users:
+        for user_id in tqdm(users):
             # Get the row corresponding to the user
             user_row = self.normalized_matrix.getrow(user_id)
             top_rated = np.argsort(user_row.data)[::-1][:self.n_recomm]
