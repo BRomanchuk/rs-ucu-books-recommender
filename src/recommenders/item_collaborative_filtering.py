@@ -22,6 +22,8 @@ class ItemRecommender(BaseRecommender):
         ratings.dropna(subset=['ISBN_i'], inplace=True) # drop rows with NaN ISBN_i
         ratings['ISBN_i'] = ratings['ISBN_i'].astype(np.int32)
 
+        self.ratings = ratings
+
         # Create a sparse user-item matrix
         user_item_matrix = csr_matrix((ratings['Rating'], (ratings['User-ID'], ratings['ISBN_i'])), dtype=np.float64)
 
@@ -36,7 +38,7 @@ class ItemRecommender(BaseRecommender):
         
     def predict(self, users, items):
         user_predictions = {}
-        for user_id in tqdm(users):
+        for user_id in users:
             # Get the row corresponding to the user
             user_row = self.normalized_matrix.getrow(user_id)
             top_rated = np.argsort(user_row.data)[::-1][:self.n_recomm]
@@ -47,7 +49,11 @@ class ItemRecommender(BaseRecommender):
                 most_similar_books = np.argsort(book_row.data)[::-1][:self.n_recomm]
                 recommended_books.extend(most_similar_books)
 
+            # print(f"User recommendations: {top_rated}")
+            # print(f"Recommended books: {recommended_books}")
             recommended_books = list_minus(set(recommended_books), user_row.indices)
+            # print(f"Recommended books: {recommended_books}")
+
             average_ratings = {}
             for book in recommended_books:
                 # Get the average rating for the book
@@ -55,7 +61,10 @@ class ItemRecommender(BaseRecommender):
                 average_ratings[book] = average_rating
 
             sorted_recommended_books = sorted(recommended_books, key=lambda book: average_ratings[book], reverse=True)[:self.n_recomm]
-            user_predictions[user_id] = self.books[self.books['ISBN'].isin(sorted_recommended_books)]
+            # print(f"Sorted recommended books: {sorted_recommended_books}")
+            isbns = self.ratings[self.ratings['ISBN_i'].isin(sorted_recommended_books)]['ISBN']
+            # print(f"ISBNs: {isbns}")
+            user_predictions[user_id] = self.books[self.books['ISBN'].isin(isbns)]
 
         return user_predictions
 
