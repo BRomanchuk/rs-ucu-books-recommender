@@ -4,6 +4,9 @@ import pandas as pd
 from scipy.sparse import csr_matrix
 from sklearn.metrics.pairwise import cosine_similarity
 
+def list_minus(a, b):
+    return [x for x in a if x not in b]
+
 class ItemRecommender(BaseRecommender):
     def __init__(self):
         super().__init__()
