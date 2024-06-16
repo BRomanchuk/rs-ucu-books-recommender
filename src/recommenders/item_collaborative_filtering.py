@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from scipy.sparse import csr_matrix
 from sklearn.metrics.pairwise import cosine_similarity
+from tqdm import tqdm
 
 def list_minus(a, b):
     return [x for x in a if x not in b]
@@ -30,12 +31,12 @@ class ItemRecommender(BaseRecommender):
         normalized_matrix.data -= np.repeat(self.means, np.diff(normalized_matrix.indptr))
         self.normalized_matrix = normalized_matrix
 
-        self.similarity_matrix = cosine_similarity(normalized_matrix.T)
+        self.similarity_matrix = cosine_similarity(normalized_matrix.T, dense_output=False)
         self.books = books
         
     def predict(self, users, items):
         user_predictions = {}
-        for user_id in users:
+        for user_id in tqdm(users):
             # Get the row corresponding to the user
             user_row = self.normalized_matrix.getrow(user_id)
             top_rated = np.argsort(user_row.data)[::-1][:self.n_recomm]
@@ -54,7 +55,7 @@ class ItemRecommender(BaseRecommender):
                 average_ratings[book] = average_rating
 
             sorted_recommended_books = sorted(recommended_books, key=lambda book: average_ratings[book], reverse=True)[:self.n_recomm]
-            user_predictions[user_id] = books[books['ISBN'].isin(sorted_recommended_books)]
+            user_predictions[user_id] = self.books[self.books['ISBN'].isin(sorted_recommended_books)]
 
         return user_predictions
 

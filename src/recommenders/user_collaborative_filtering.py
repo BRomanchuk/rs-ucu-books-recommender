@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from scipy.sparse import csr_matrix
 from sklearn.neighbors import NearestNeighbors
+from tqdm import tqdm
 
 class UserRecommender(BaseRecommender):
     def __init__(self):
@@ -36,7 +37,7 @@ class UserRecommender(BaseRecommender):
         
     def predict(self, users, items):
         user_predictions = {}
-        for user_id in users:
+        for user_id in tqdm(users):
             # Get the row corresponding to the user
             user_row = self.normalized_matrix.getrow(user_id)
 
