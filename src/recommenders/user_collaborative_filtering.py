@@ -1,4 +1,6 @@
 from src.recommenders.base import BaseRecommender
+from src.utils.data_preprocessing import user_item_normalized
+
 import numpy as np
 import pandas as pd
 from scipy.sparse import csr_matrix
@@ -12,28 +14,11 @@ class UserRecommender(BaseRecommender):
         self.n_recomm = 5
 
     def fit(self, items, users, ratings):
-        books = items.reset_index() # add index as a column
-        isbn_mapping = {category: idx for idx, category in enumerate(books['ISBN'])}
-        
-        ratings = ratings.copy()
-        ratings['ISBN_i'] = ratings['ISBN'].map(isbn_mapping) # map ISBN to index
-        ratings.dropna(subset=['ISBN_i'], inplace=True) # drop rows with NaN ISBN_i
-        ratings['ISBN_i'] = ratings['ISBN_i'].astype(np.int32)
-
-        # Create a sparse user-item matrix
-        user_item_matrix = csr_matrix((ratings['Rating'], (ratings['User-ID'], ratings['ISBN_i'])), dtype=np.float64)
-
-        # Normalize the user-item matrix
-        normalized_matrix = user_item_matrix.copy()
-        self.means = np.array([normalized_matrix[i].data.mean() for i in range(normalized_matrix.shape[0])])
-        normalized_matrix.data -= np.repeat(self.means, np.diff(normalized_matrix.indptr))
+        _, self.normalized_matrix, self.books, _ = user_item_normalized(items, ratings)
 
         # Fit a nearest neighbors model
         self.model = NearestNeighbors(n_neighbors=30, metric='cosine', n_jobs=-1)
-        self.model.fit(normalized_matrix)
-
-        self.books = books
-        self.normalized_matrix = normalized_matrix
+        self.model.fit(self.normalized_matrix)
         
     def predict(self, users, items):
         user_predictions = {}
