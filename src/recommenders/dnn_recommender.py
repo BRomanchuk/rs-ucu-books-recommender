@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import average_precision_score
 
 class DNNRecommenderWithFeatures(nn.Module):
     def __init__(self, num_users, num_items, num_user_features, num_item_features, embedding_dim, hidden_dim):
@@ -63,6 +64,8 @@ class DNNRecommender(BaseRecommender):
 
         self.model = DNNRecommenderWithFeatures(num_users, num_items, num_user_features, num_item_features, self.embedding_dim, self.hidden_dim)
         optimizer = optim.Adam(self.model.parameters(), lr=0.001)
+        scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
+
 
         for epoch in range(self.num_epochs):
             self.model.train()
@@ -73,6 +76,7 @@ class DNNRecommender(BaseRecommender):
             
             loss.backward()
             optimizer.step()
+            scheduler.step()
             
             print(f'Epoch {epoch+1}/{self.num_epochs}, Loss: {loss.item()}')
 
@@ -91,8 +95,14 @@ class DNNRecommender(BaseRecommender):
 
     def eval(self, users, items, ratings):
         self.model.eval()
-        test_loss = self.criterion(self.predict(users, items), torch.tensor(ratings, dtype=torch.float32))
+        predictions = self.predict(users, items)
+        test_loss = self.criterion(predictions, torch.tensor(ratings, dtype=torch.float32))
         print(f'Test Loss: {test_loss.item()}')
+
+        # Calculate average precision
+        predictions = predictions.numpy()
+        avg_precision = average_precision_score(ratings, predictions.reshape(-1, 1))
+        print(f'Average Precision: {avg_precision}')
     
     def preprocess(self, items, users, ratings):
         # Encode categorical variables
@@ -101,7 +111,6 @@ class DNNRecommender(BaseRecommender):
         self.publisher_encoder = LabelEncoder()
         self.user_encoder = LabelEncoder()
 
-        # Normalize the user-item matrix
         ratings_users_merged = ratings.merge(users, left_on='User-ID', right_on='User-ID')
         final_df = ratings_users_merged.merge(items, left_on='ISBN', right_on='ISBN')
 
@@ -110,6 +119,6 @@ class DNNRecommender(BaseRecommender):
         final_df['Publisher_encoded'] = self.publisher_encoder.fit_transform(final_df['Publisher'])
         final_df['User_ID_encoded'] = self.user_encoder.fit_transform(final_df['User-ID'])
 
-        return final_df['Rating'], final_df[['User_ID_encoded', 'Age']], final_df[['ISBN_encoded', 'Author_encoded', 'Year', 'Publisher_encoded']]
+        return final_df[['User_ID_encoded', 'Age', 'ISBN_encoded', 'Author_encoded', 'Year', 'Publisher_encoded']], final_df['Rating']
 
 
