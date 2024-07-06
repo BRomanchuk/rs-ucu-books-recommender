@@ -43,6 +43,27 @@ def preprocess(books, ratings, users):
 
     return users, ratings, books
 
+def preprocess2(items, users, ratings):
+    #   Leave only numeric values in 'Age' column and drop NaN values
+    users['Age'] = [float(x) if (isinstance(x, (str)) and x.isnumeric()) else None for x in users['Age']]
+
+    # Drop ratings with 0 as they don't provide any information 
+    ratings = ratings[ratings.Rating > 0]
+
+    # Drop duplicates
+    items.drop_duplicates(subset='ISBN', inplace=True)
+    items = items.reset_index()
+
+    # Fill rows with NaN values in 'Year' and 'Age' columns with median values
+    # We are not doing this with 'Age' in the users because it's an only feature column and it has half of the values as NaN
+    items['Year'] = items['Year'].fillna(items['Year'].median())
+
+    # Some User-IDs are not numberic, so we convert them
+    users['User-ID'] = pd.to_numeric(users['User-ID'], errors='coerce')
+
+    return items.dropna(), users.dropna(), ratings.dropna()
+
+
 def user_item_normalized(books, ratings):
         books = books.reset_index() # add index as a column
         isbn_mapping = {category: idx for idx, category in enumerate(books['ISBN'])}
