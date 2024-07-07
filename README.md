@@ -4,13 +4,13 @@ UCU Recommender Systems course project
 
 ## Project Structure
 ```bash
-├── artifacts        # artifacts folder
+├── artifacts        # artifacts folder (A/B Testing Framework)
 ├── data             # folder with books, users, and ratings data
-├── experiments      # folder with experiments
+├── experiments      # folder of notebooks with all the recommenders testing and Multi-armed bandit simulation
 └── src
     ├── entities     # wrapper classes for users, items, and ratings
     ├── recommenders # wrapper classes for recommendation algorithms
-    └── evaluators   # evaluation realizations
+    └── evaluators   # evaluation realizations    
 ```
 
 
