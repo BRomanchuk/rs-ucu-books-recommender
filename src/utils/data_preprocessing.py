@@ -88,13 +88,5 @@ def generate_random_timestamp(start_date, end_date):
 
 def augment_timestamps(start_date, end_date, ratings_df): 
 
-    ratings_df = ratings_df.sort_values(by=['User-ID', 'Rating'], ascending=[True, False])
-
-    # Generate synthetic timestamps for each rating
-    ratings_df['timestamp'] = ratings_df.groupby('User-ID').apply(
-        lambda x: pd.to_datetime(
-            [generate_random_timestamp(start_date, end_date) for _ in range(len(x))]
-        )
-    ).reset_index(level=0, drop=True)
-
+    ratings_df['timestamp'] = ratings_df.apply(lambda x: generate_random_timestamp(start_date, end_date), axis=1)
     return ratings_df

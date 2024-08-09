@@ -13,7 +13,7 @@ def main():
     augmented_ratings = utils.data_preprocessing.augment_timestamps(start_date, end_date, ratings)
     print(augmented_ratings.head())
 
-    augmented_ratings.to_csv('data/Ratings_Time.csv', index=False)
+    augmented_ratings.to_csv('data/Ratings_Time.csv', index=False, sep=';')
 
 if __name__ == '__main__':
     main()
