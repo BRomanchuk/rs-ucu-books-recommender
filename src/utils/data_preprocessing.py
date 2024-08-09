@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+from datetime import timedelta
 from scipy.sparse import csr_matrix
 
 def preprocess(books, ratings, users):
@@ -82,3 +82,19 @@ def user_item_normalized(books, ratings):
         normalized.data -= np.repeat(means, np.diff(normalized.indptr))
         
         return means, normalized, books, ratings
+
+def generate_random_timestamp(start_date, end_date):
+     return start_date + timedelta(seconds=np.random.randint(0, int((end_date - start_date).total_seconds())))
+
+def augment_timestamps(start_date, end_date, ratings_df): 
+
+    ratings_df = ratings_df.sort_values(by=['User-ID', 'Rating'], ascending=[True, False])
+
+    # Generate synthetic timestamps for each rating
+    ratings_df['timestamp'] = ratings_df.groupby('User-ID').apply(
+        lambda x: pd.to_datetime(
+            [generate_random_timestamp(start_date, end_date) for _ in range(len(x))]
+        )
+    ).reset_index(level=0, drop=True)
+
+    return ratings_df
