@@ -37,6 +37,11 @@ python -m ipykernel install --user --name .books-recommender --display-name ".bo
 
 ## HW-1
 
+## Exploratory data analysis
+[experiment notebook #1](experiments/mykyta_eda.ipynb)
+[experiment notebook #2](experiments/bohdan_eda.ipynb)
+[experiment notebook #3](experiments/sunnycows_eda.ipynb)
+
 ## Content Based Filtering
 [source code](src/recommenders/content_recommender.py) | [experiment notebook](experiments/contentbased.ipynb)
 Calculates distances between items using tfidf matrix, calculated for textual features
@@ -46,6 +51,15 @@ Calculates distances between items using tfidf matrix, calculated for textual fe
 
 Predicts mean book rating regardless of the user.
 
+### Item-based Collaborative Filtering Recommender
+[source code and experiment notebook](experiments/item_item_lr.ipynb)
+
+Recommendations based on finding similarities between the items in terms of how they are rated by the users
+
+### User-based Collaborative Filtering Recommender
+[source code and experiment notebook](experiments/user_user_lr.ipynb)
+
+Recommendations based on finding similarities between the users in terms of how they rate the books
 
 ### PageRank
 [source code and experiment](experiments/page_rank_recommender.ipynb)
