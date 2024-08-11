@@ -59,17 +59,25 @@ def recall_at_k(recommended_items, relevant_items, k):
     return len(relevant_and_recommended) / len(relevant_items)
 
 
-def average_precision(predicted_items, actual_items, k):
-    hits = 0
-    sum_precisions = 0
-    num_relevant_items = len(actual_items)
+def average_precision(predicted_items, actual_items, m):
+    m = min(m, len(actual_items))
+    ap = 0
+    for i in range(m):
+        ap += precision_at_k(predicted_items, actual_items, i + 1) / m
+    return ap
 
-    for i, p in enumerate(predicted_items):
-        if p in actual_items:
-            hits += 1
-            precision_at_i = hits / (i + 1)
-            sum_precisions += precision_at_i
 
-    if num_relevant_items > 0:
-        return sum_precisions / k
-    return 0
+# def average_precision(predicted_items, actual_items, k):
+#     hits = 0
+#     sum_precisions = 0
+#     num_relevant_items = len(actual_items)
+
+#     for i, p in enumerate(predicted_items):
+#         if p in actual_items:
+#             hits += 1
+#             precision_at_i = hits / (i + 1)
+#             sum_precisions += precision_at_i
+
+#     if num_relevant_items > 0:
+#         return sum_precisions / k
+#     return 0
