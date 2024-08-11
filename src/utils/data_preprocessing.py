@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from datetime import timedelta
+from datetime import datetime
 from scipy.sparse import csr_matrix
 
 def preprocess(books, ratings, users):
@@ -84,9 +85,40 @@ def user_item_normalized(books, ratings):
         return means, normalized, books, ratings
 
 def generate_random_timestamp(start_date, end_date):
-     return start_date + timedelta(seconds=np.random.randint(0, int((end_date - start_date).total_seconds())))
+     return (start_date + timedelta(seconds=np.random.randint(0, int((end_date - start_date).total_seconds())))).timestamp()
 
-def augment_timestamps(start_date, end_date, ratings_df): 
+def augment_timestamps():
+    start_date = datetime(2000, 1, 1)
+    end_date = datetime(2020, 1, 1)
 
-    ratings_df['timestamp'] = ratings_df.apply(lambda x: generate_random_timestamp(start_date, end_date), axis=1)
-    return ratings_df
+    ratings = pd.read_csv('data/df_with_emb_cleaned.csv', delimiter=',', dtype={'User-ID': np.int32, 'ISBN': str, 'Rating': np.int8})
+    print(ratings.head())
+    
+    ratings['time'] = ratings.apply(lambda x: generate_random_timestamp(start_date, end_date), axis=1)
+    print(ratings.head())
+
+    ratings.to_csv('data/Ratings_merged_emb_time.csv', index=False, sep=',')
+
+def add_descriptions():
+    dir = '../data/goodreads'
+    dfs = []
+
+    # Loop through all files in the directory
+    for filename in os.listdir(dir):
+        if filename.endswith(".csv") and filename.startswith("book"):  # Use 'and' for logical conditions
+            file_path = os.path.join(dir, filename)
+            df = pd.read_csv(file_path)
+
+            # Correct way to check for column existence
+            if 'Description' in df.columns and 'Language' in df.columns:
+                dfs.append(df[['ISBN', 'Description', 'Language']])
+
+    # Concatenate all DataFrames
+    df_combined = pd.concat(dfs, ignore_index=True)
+
+    books = pd.read_csv('../data/Books.csv', delimiter=';', dtype={'ISBN': str, 'Title': str, 'Author': str, 'Year': np.int16, 'Publisher': str})
+    books = pd.merge(books, df_combined, on='ISBN', how='left')
+    books.to_csv('../data/Books_Extended.csv', sep=';', index=False)
+
+if __name__ == '__main__':
+    augment_timestamps()
