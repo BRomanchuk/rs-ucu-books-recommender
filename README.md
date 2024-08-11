@@ -87,6 +87,9 @@ Experiments with Wide Deep and BPR from LibRecommender
 
 2-stage recommender that uses FunkSVD for candidate generation and BPR for ranking.
 
+### Sequential Recommender
+[experiment notebook](experiments/rnn_lr.ipynb)
+Add sequential recommender experiment usign LibRecommender
 
 ## Data
 [Kaggle Book-Crossing Dataset](https://www.kaggle.com/datasets/somnambwl/bookcrossing-dataset)
