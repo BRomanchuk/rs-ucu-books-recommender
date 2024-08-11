@@ -103,7 +103,12 @@ Experiments with Wide Deep and BPR from LibRecommender
 
 ### Sequential Recommender
 [experiment notebook](experiments/rnn_lr.ipynb)
-Add sequential recommender experiment usign LibRecommender
+
+RNN/LSTM-based sequential recommender based on embeddings with LibRecommender.
+
+[experiment notebook](experiments/lstm.ipynb)
+
+RNN/LSTM-based sequential recommender based on the order of ratings with augmented timestamps using tensorflow/lstm layer.
 
 ## Data
 [Kaggle Book-Crossing Dataset](https://www.kaggle.com/datasets/somnambwl/bookcrossing-dataset)
